@@ -43,6 +43,7 @@ import com.example.gradletext.vo.TagVO;
 public class EsBlogServiceImpl implements EsBlogService {
 	@Autowired
 	private EsBlogRepository esBlogRepository;
+	//创建搜索模板
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
 	@Autowired
@@ -169,21 +170,25 @@ public class EsBlogServiceImpl implements EsBlogService {
 		List<String> usernamelist = new ArrayList<>();
 		// given
 		SearchQuery searchQuery = new NativeSearchQueryBuilder()
-				.withQuery(matchAllQuery())
-				.withSearchType(SearchType.QUERY_THEN_FETCH)
-				.withIndices("blog").withTypes("blog")
+				.withQuery(matchAllQuery())   //设置查询所有，相当于不设置查询条件
+				//2.1设置搜索类型，默认值就是QUERY_THEN_FETCH
+				.withSearchType(SearchType.QUERY_THEN_FETCH) //指定索引的类型，只先从各分片中查询匹配的文档，再重新排序和排名，取前size个文档
+		    	//2.2指定索引库和文档类型
+				.withIndices("blog").withTypes("blog")//指定要查询的索引库的名称和类型，其实就是我们文档@Document中设置的indedName和type
 				.addAggregation(terms("users").field("username").size(12))
+		    	//2.4构建查询对象
 				.build();
 		// when
+     	//3.通过elasticSearch模板elasticsearchTemplate.query()方法查询,获得聚合(常用)
 		Aggregations aggregations = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<Aggregations>() {
 			@Override
 			public Aggregations extract(SearchResponse response) {
 				return response.getAggregations();
 			}
 		});
-		
+		//获得对应的聚合函数的聚合子类，该聚合子类也是个map集合,里面的value就是桶Bucket，我们要获得Bucket
 		StringTerms modelTerms =  (StringTerms)aggregations.asMap().get("users"); 
-	        
+		//将集合转换成迭代器遍历桶,当然如果你不删除buckets中的元素，直接foreach遍历就可以了    
         Iterator<org.elasticsearch.search.aggregations.bucket.terms.StringTerms.Bucket> modelBucketIt = modelTerms.getBuckets().iterator();
         while (modelBucketIt.hasNext()) {
             Bucket actiontypeBucket = modelBucketIt.next();

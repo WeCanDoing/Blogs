@@ -210,6 +210,7 @@ public class UserspaceController {
 	 */
 	@GetMapping("/{username}/blogs/{id}")
 	public String getBlogById(@PathVariable("username") String username,@PathVariable("id") Long id, Model model){
+		User principal = null;
 		
 		Blog blog= blogService.getBlogById(id);
 		//每次读取，简单的认为阅读量增加一次
@@ -218,12 +219,12 @@ public class UserspaceController {
 		boolean isBlogOwner=false;
 		if(SecurityContextHolder.getContext().getAuthentication()!=null&& SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
 				&& !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")){
-			    User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			    principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		     	if(principal !=null && username.equals(principal.getUsername())){
 			     	isBlogOwner=true;
 			}
+		
 		}
-		 User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		  //判断操作用户的点赞情况
         List<Vote> votes = blog.getVotes();
         Vote currentVote = null; //当前用户的点赞情况

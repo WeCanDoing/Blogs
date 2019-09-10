@@ -34,7 +34,7 @@ $(function() {
 				 }
 		     },
 		     error : function() {
-		    	 toastr.error("error!");
+		    	 toastr.error("your should Login");
 		     }
 		 });
 	});
@@ -57,7 +57,7 @@ $(function() {
 	
 		     },
 		     error : function() {
-		    	 toastr.error("error!");
+		    	 toastr.error("your should Login");
 		     }
 		 });
 	}
@@ -82,11 +82,17 @@ $(function() {
 					 // 获取评论列表
 					 getCommnet(blogId);
 				 } else {
-					 toastr.error(data.message);
+					 if( typeof data != "undefined"){
+		                	toastr.warning('请登录后重试', 'Warning');                   
+		                	}
+		                	else
+		                	{
+		                		 toastr.error(data.message);
+		                	}
 				 }
 		     },
 		     error : function() {
-		    	 toastr.error("error!");
+		    	 toastr.error("your should Login");
 		     }
 		 });
 	});
@@ -111,7 +117,7 @@ $(function() {
 				 }
 		     },
 		     error : function() {
-		    	 toastr.error("error!");
+		    	 toastr.error("your should Login");
 		     }
 		 });
 	});
@@ -141,11 +147,17 @@ $(function() {
         
                     window.location = blogUrl;
                 } else {
-                    toastr.error(data.message);
+                	if( typeof data != "undefined"){
+                	toastr.warning('请登录后重试', 'Warning');                   
+                	}
+                	else
+                	{
+                		 toastr.error(data.message);
+                	}
                 }
             },
             error : function() {
-                toastr.error("error!");
+                toastr.error("your should Login");
             }
 
         });
@@ -174,11 +186,17 @@ $(function() {
                     // 成功后，重定向
                     window.location = blogUrl;
                 } else {
-                    toastr.error(data.message);
+                	if( typeof data != "undefined"){
+                    	toastr.warning('请登录后重试', 'Warning');                   
+                    	}
+                    	else
+                    	{
+                    		 toastr.error(data.message);
+                    	}
                 }
             },
             error : function() {
-                toastr.error("error!");
+                toastr.error("your should Login");
             }
         });
     });

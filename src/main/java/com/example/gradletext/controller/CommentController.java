@@ -52,13 +52,20 @@ public class CommentController {
 	@GetMapping
 	public String listComments(@RequestParam(value="blogId",required=true)Long blogId,Model model){
 		System.out.println("评论列表进入方法体");
+		User principal=null;
 		Blog blog =blogService.getBlogById(blogId);
 		List<Comment>comments=blog.getComments();
 		System.out.println("评论为：" + comments.toString());
+		// 判断操作用户是否是评论的所有者
 		String commentOwner="";
-		if(SecurityContextHolder.getContext().getAuthentication()!=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-			&& !SecurityContextHolder.getContext().getAuthentication().toString().equals("anonymousUser")	){
-			User principal=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//修改bug
+		String username=SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		boolean flag=!username.equals("anonymousUser");
+        System.out.println("输出--------------------"+flag);
+    	if(SecurityContextHolder.getContext().getAuthentication()!=null&& SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+				&& !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")){
+				//user实体类提取转化
+			principal=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(principal !=null){
 				commentOwner=principal.getUsername();
 			}
@@ -66,8 +73,7 @@ public class CommentController {
 		}
 		
 		 model.addAttribute("commentOwner", commentOwner);
-
-	        model.addAttribute("comments", comments);
+	     model.addAttribute("comments", comments);
 
 	        return "userspace/blog :: #mainContainerRepleace";
 		
